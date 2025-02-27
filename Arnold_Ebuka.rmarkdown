@@ -1,0 +1,122 @@
+---
+title: "Arnold_Ebuka"
+format: pptx
+editor: visual
+editor_options: 
+  chunk_output_type: inline
+---
+
+
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see <https://quarto.org/docs/presentations/>.
+
+## Bullets
+
+When you click the **Render** button a document will be generated that includes:
+
+-   Content authored with markdown
+-   Output from executable code
+
+## Code
+
+When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+
+
+```{r}
+library(readr)
+volcano <- read_csv("//storage.slu.se/home_2$/ador0002/Desktop/Ebuka/tidytuesday/data/2020/2020-05-12/volcano.csv")   #call out and view data to work on
+View(volcano)
+```
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+glimpse(volcano) #view dataset at a glimpse
+```
+
+```{r}
+volcano1 <- subset(volcano, select = c(3,23:26))
+```
+
+```{r}
+volcano2 <- pivot_longer(volcano1, cols = c("population_within_5_km", "population_within_10_km", "population_within_30_km", "population_within_100_km"))
+```
+
+```{r}
+volcano3 <- volcano2 %>% group_by (primary_volcano_type,name)%>%  #Group the selected headings and get the mean 
+             summarise(population= mean(value))
+            
+colnames (volcano3)[1] = "type"
+colnames (volcano3)[2] = "distance"	
+```
+
+```{r}
+#volcano3 <-    as.data.frame(volcano2) %>% arrange (primary_volcano_type,name)  
+  #colnames (volcano3)[1] = "type"
+  #colnames (volcano3)[2] = "population"
+```
+
+```{r}
+volcano4 <- volcano3[c(1:4, 9:12, 17:20),]
+```
+
+```{r}
+ggplot(volcano4, aes(x = type, y = population)) +
+  geom_boxplot()
+```
+
+```{r}
+ggplot(volcano4, aes(x = type, y = population, fill = type)) +
+  geom_boxplot() + scale_fill_manual(values = c("black", "brown", "gold"))
+```
+
+```{r}
+ggplot(volcano4, aes(x = type, y = population, fill = distance)) +
+  geom_col(position = "dodge") + scale_fill_manual(values = c("blue", "brown","black", "gold"))
+```
+
+```{r}
+ggplot(volcano4, aes(x = population, color = type, fill = type)) +
+  geom_density(alpha = 0.5)
+```
+
+```{r}
+par(mfrow = c(1, 1))
+```
+
+```{r}
+library(sf)
+stat_sf(geom)
+```
+
+```{r}
+world <- st_read(system.file("shape/nc.shp", package="sf"))
+```
+
+```{r}
+volcano <- data.frame(
+  longitude = c(-67.618, -121.490),
+  latitude = c(46.206, -23.292))
+```
+
+```{r}
+points_sf <- st_as_sf(world, coords = c("longitude", "latitude"), crs = st_crs(world))
+```
+
+```{r}
+ggplot(data = volcano) +
+  geom_sf() +
+  geom_sf(data = latitude, color = "red", size = 5)) +
+  labs(title = "Map with Points Layer")
+```
+
+
+
+```{}
+```
+

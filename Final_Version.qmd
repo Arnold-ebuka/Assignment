@@ -1,0 +1,317 @@
+---
+title: "Arnold_Assignment"
+format: revealjs
+editor: visual
+---
+
+# Load up dataset
+
+Load up the dataset you wish to work on. The dataset is gotten from GitHub tidytuesday
+
+1.  call in the package to read the data. Since it is a csv data, library(readr) was used.
+
+2.  load up the data by copy pasting the link generated from GitHub
+
+    library(readr) volcano \<- read_csv("//storage.slu.se/home_2\$/ador0002/Desktop/Finalized/tidytuesday/data/2020/2020-05-12/volcano.csv") View(volcano)
+
+```{r}
+library(readr)
+volcano <- read_csv("//storage.slu.se/home_2$/ador0002/Desktop/Finalized/tidytuesday/data/2020/2020-05-12/volcano.csv")
+View(volcano)
+```
+
+# Load up the packages needed to work on the dataset
+
+1.  library(tidyverse)
+2.  library(sf)
+3.  library(tmap)
+
+```{r}
+library(tidyverse)
+library(sf)
+library(tmap)
+```
+
+# View dataset at a glimpse
+
+1.  Take a quick overview on all the dataset at a glimpse
+
+    glimpse(volcano)
+
+```{r}
+glimpse(volcano) 
+```
+
+# Select preferred columns to work on
+
+volcano1 \<- subset(volcano, select = c(3,23:26))
+
+```{r}
+volcano1 <- subset(volcano, select = c(3,23:26)) 
+```
+
+# Make selected columns longer
+
+volcano2 \<- pivot_longer(volcano1, cols = c("population_within_5_km", "population_within_10_km", "population_within_30_km", "population_within_100_km"))
+
+```{r}
+volcano2 <- pivot_longer(volcano1, cols = c("population_within_5_km", "population_within_10_km", "population_within_30_km", "population_within_100_km"))
+```
+
+# Group the selected headings and get the mean
+
+# Rename the selected headings
+
+volcano3 \<- volcano2 %\>% group_by (primary_volcano_type,name)%\>% summarise(population= mean(value)) colnames (volcano3)\[1\] = "type" colnames (volcano3)\[2\] = "distance"
+
+```{r}
+volcano3 <- volcano2 %>% group_by (primary_volcano_type,name)%>% 
+  summarise(population= mean(value))
+colnames (volcano3)[1] = "type"
+colnames (volcano3)[2] = "distance"
+```
+
+# Arrange and rename columns needed
+
+#volcano3 \<- as.data.frame(volcano2) %\>% arrange (primary_volcano_type,name)\
+#colnames (volcano3)\[1\] = "type" #colnames (volcano3)\[2\] = "population"
+
+```{r}
+#volcano3 <-    as.data.frame(volcano2) %>% arrange (primary_volcano_type,name)  
+  #colnames (volcano3)[1] = "type"
+  #colnames (volcano3)[2] = "population"
+```
+
+# Selection of some column
+
+volcano4 \<- volcano3\[c(1:4, 9:12, 17:20),\]
+
+```{r}
+volcano4 <- volcano3[c(1:4, 9:12, 17:20),]
+```
+
+# Plotting a boxplot using the data from volcano4
+
+ggplot(volcano4, aes(x = type, y = population)) + geom_boxplot()
+
+```{r}
+ggplot(volcano4, aes(x = type, y = population)) +
+  geom_boxplot()
+```
+
+# Add colours to the plotted boxplot
+
+ggplot(volcano4, aes(x = type, y = population, fill = type)) + geom_boxplot() + scale_fill_manual(values = c("black", "brown", "gold"))
+
+```{r}
+ggplot(volcano4, aes(x = type, y = population, fill = type)) +
+  geom_boxplot() + scale_fill_manual(values = c("black", "brown", "gold"))
+```
+
+# Plotting a geom_col and differentiate with colours using the data from volcano4
+
+ggplot(volcano4, aes(x = type, y = population, fill = distance)) + geom_col(position = "dodge") + scale_fill_manual(values = c("blue", "brown","black", "gold"))
+
+```{r}
+ggplot(volcano4, aes(x = type, y = population, fill = distance)) +
+  geom_col(position = "dodge") + scale_fill_manual(values = c("blue", "brown","black", "gold"))
+```
+
+# Plotting a geom_density and differentiate with colours using the data from volcano4
+
+ggplot(volcano4, aes(x = population, color = type, fill = type)) + geom_density(alpha = 0.5)
+
+```{r}
+ggplot(volcano4, aes(x = population, color = type, fill = type)) +
+  geom_density(alpha = 0.5)
+```
+
+# Plotting a geom_point and differentiate with colours using the data from volcano4
+
+ggplot(volcano4, aes(x = type, y = population, colour = type, shape = type)) + geom_point()
+
+```{r}
+ggplot(volcano4, aes(x = type, y = population, colour = type, shape = type)) +
+ geom_point()
+
+```
+
+# Call in a package you intend to work
+
+library(cowplot)
+
+```{r}
+library(cowplot)
+```
+
+# Rename columns needed
+
+a \<- ggplot(volcano4, aes(x = type, y = population)) + geom_boxplot() b \<- ggplot(volcano4, aes(x = type, y = population, fill = distance)) + geom_col(position = "dodge") + scale_fill_manual(values = c("blue", "brown","black", "gold")) c \<- ggplot(volcano4, aes(x = population, color = type, fill = type)) + geom_density(alpha = 0.5) d \<- ggplot(volcano4, aes(x = type, y = population, colour = type, shape = type)) + geom_point()
+
+```{r}
+a <- ggplot(volcano4, aes(x = type, y = population)) + geom_boxplot()
+b <- ggplot(volcano4, aes(x = type, y = population, fill = distance)) + geom_col(position = "dodge") + scale_fill_manual(values = c("blue", "brown","black", "gold"))
+c <- ggplot(volcano4, aes(x = population, color = type, fill = type)) + geom_density(alpha = 0.5)
+d <- ggplot(volcano4, aes(x = type, y = population, colour = type, shape = type)) +
+ geom_point()
+```
+
+# Arrange all plots into one frame
+
+plot_grid(a, b, c, d, nrow = 2, ncol = 2)
+
+```{r}
+plot_grid(a, b, c, d, nrow = 2, ncol = 2)
+```
+
+# Differentiate with label
+
+library(cowplot) plot_grid(a, b, c, d, nrow = 2, ncol = 2, labels=c("A", "B", "C", "D"))
+
+```{r}
+library(cowplot)
+plot_grid(a, b, c, d, 
+nrow = 2, ncol = 2,
+labels=c("A", "B", "C", "D"))
+```
+
+# Group preferred columns to work on
+
+volcano5 \<- subset(volcano, select = c(2,5:6,8:9,23:26))
+
+```{r}
+volcano5 <- subset(volcano, select = c(2,5:6,8:9,23:26))
+```
+
+# Make selected columns longer
+
+volcano6 \<- pivot_longer(volcano5, cols = c("population_within_5_km", "population_within_10_km", "population_within_30_km", "population_within_100_km"))
+
+```{r}
+volcano6 <- pivot_longer(volcano5, cols = c("population_within_5_km", "population_within_10_km", "population_within_30_km", "population_within_100_km"))
+```
+
+# Group preferred columns to work on
+
+volcano7 \<- subset(volcano6, select = c(1:2,4:5))
+
+```{r}
+volcano7 <- subset(volcano6, select = c(1:2,4:5))
+```
+
+# Load up the packages needed to work on the dataset
+
+1.  library(tidyverse)
+2.  library(sf)
+3.  library(tmap)
+
+# Note: Because I had to close my R studio and start again, I needed to load up the packages anew
+
+```{r}
+library(sf)
+library(tidyverse)
+library(tmap)
+```
+
+# Load up the packages needed to create the map
+
+library(geometry)
+
+```{r}
+library(geometry)
+```
+
+# Load up the packages needed to create the map
+
+library(rnaturalearth) world_map \<- ne_countries(scale = "medium", returnclass = "sf")
+
+```{r}
+library(rnaturalearth)
+world_map <- ne_countries(scale = "medium", returnclass = "sf")
+```
+
+# Create the map using geom_point
+
+volcanomap\<-ggplot(volcano6, aes(x = longitude, y = latitude, group = name)) + geom_point(aes(fill = value, colour = region)) print(volcanomap)
+
+```{r}
+volcanomap<-ggplot(volcano6, aes(x = longitude, y = latitude, group = name)) + geom_point(aes(fill = value, colour = region)) 
+print(volcanomap)
+```
+
+# Load up the packages needed to create a map
+
+library(rnaturalearth)
+
+```{r}
+library(rnaturalearth)
+```
+
+# Select specific rows
+
+volcanomap_data \<- volcano6\[c(1:24),\]
+
+```{r}
+volcanomap_data <- volcano6[c(1:24),] 
+```
+
+# Create sf object
+
+volcanomap_data \<- volcano6 %\>% st_as_sf(coords = c("longitude", "latitude"),
+
+crs=st_crs(world_map))
+
+```{r}
+volcanomap_data <- volcano6 %>%  st_as_sf(coords = c("longitude", "latitude"), 
+                                          # create sf object 
+           crs=st_crs(world_map)) 
+
+```
+
+# Create a map
+
+ggplot() + geom_sf(data = world_map, fill = NA, colour = "red")+ geom_sf(data = volcanomap_data)
+
+```{r}
+ggplot() +
+geom_sf(data = world_map, fill = NA, colour = "red")+
+  geom_sf(data = volcanomap_data)
+```
+
+```{r}
+ggplot() +
+geom_sf(data = world_map, fill = NA, colour = "green")+
+  geom_sf(data = volcanomap_data)
+```
+
+# Adjust the colour for better visibility
+
+ggplot() + geom_sf(aes(geometry = world_map\$geometry))+ geom_sf(data = world_map, fill = NA, colour = "blue") + geom_sf(data = volcanomap_data)
+
+```{r}
+ggplot() +
+geom_sf(aes(geometry = world_map$geometry))+
+geom_sf(data = world_map, fill = NA, colour = "black") +
+  geom_sf(data = volcanomap_data, colour = "red")
+
+```
+
+```{r}
+ggplot() +
+geom_sf(aes(geometry = world_map$geometry))+
+geom_sf(data = world_map, fill = NA, colour = "blue") +
+  geom_sf(data = volcanomap_data, colour = "red")
+```
+
+# Challenges include
+
+1.  had no knowledge of R studio before the class
+2.  difficulty loading up the dataset from Github
+3.  large dataset hence understanding it was a serious challenge
+4.  Rendering was a big challenge as mine was not rendering in full
+
+# knowledge gain
+
+1.  the use of R studio being an entirely new experience for me, everything I was able to come up with and any further improvements are all new knowledge I have gain.
+
+# Thank you!!!
