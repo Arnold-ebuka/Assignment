@@ -1,4 +1,3 @@
-"# Assignment" 
 # Project title
 Assignment on data handling
 
